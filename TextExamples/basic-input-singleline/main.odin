@@ -117,7 +117,7 @@ window_event_proc :: proc "stdcall" (
 				hdc = device_context,
 				x = font_pos[0],
 				y = font_pos[1],
-				lpString = raw_data(buf[:]),
+				lpString = cast(cstring16)raw_data(buf[:]),
 				c = cast(i32)len(buf)
 			)// -> BOOL ---
 
