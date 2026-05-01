@@ -186,7 +186,7 @@ init_d3d11 :: proc() -> bool {
             msg := string(cstring(err_blob->GetBufferPointer()))
             win.MessageBoxW(g_hwnd, win.utf8_to_wstring(msg), "VS compile error", win.MB_OK)
             err_blob->Release()
-            
+
         }
         return false
     }
@@ -220,7 +220,7 @@ init_d3d11 :: proc() -> bool {
             msg := string(cstring(err_blob->GetBufferPointer()))
             win.MessageBoxW(g_hwnd, win.utf8_to_wstring(msg), win.L("VS compile error"), win.MB_OK)
             err_blob->Release()
-            
+
         }
         return false
     }
@@ -305,12 +305,12 @@ main :: proc() {
     }
     defer win.CoUninitialize()
 
-    hr = mf.MFStartup(mf.MF_VERSION, mf.MFSTARTUP_FULL)
+    hr = mf.MFStartup(mf.VERSION, mf.STARTUP_FULL)
     if hr < 0 {
-        show_error("MFStartup failed", hr)
+        show_error("Startup failed", hr)
         return
     }
-    defer mf.MFShutdown()
+    defer mf.Shutdown()
 
     instance := win.HINSTANCE(win.GetModuleHandleW(nil))
     wc: win.WNDCLASSW
@@ -334,22 +334,22 @@ main :: proc() {
 
     // Enumerate cameras
     attrs: ^mf.IMFAttributes
-    hr = mf.MFCreateAttributes(&attrs, 1)
+    hr = mf.CreateAttributes(&attrs, 1)
     if hr < 0 {
-        show_error("MFCreateAttributes failed", hr)
+        show_error("CreateAttributes failed", hr)
         return
     }
 
-    src_type_guid := mf.MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE
-    vidcap_guid   := mf.MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
+    src_type_guid := mf.DEVSOURCE_ATTRIBUTE_SOURCE_TYPE
+    vidcap_guid   := mf.DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
     attrs->SetGUID(&src_type_guid, &vidcap_guid)
 
     devices: ^^mf.IMFActivate
     count:   u32
-    hr = mf.MFEnumDeviceSources(attrs, &devices, &count)
+    hr = mf.EnumDeviceSources(attrs, &devices, &count)
     attrs->Release()
     if hr < 0 {
-        show_error("MFEnumDeviceSources failed", hr)
+        show_error("EnumDeviceSources failed", hr)
         return
     }
 
@@ -369,43 +369,43 @@ main :: proc() {
     defer source->Release()
 
     reader_attrs: ^mf.IMFAttributes
-    hr = mf.MFCreateAttributes(&reader_attrs, 2)
+    hr = mf.CreateAttributes(&reader_attrs, 2)
     if hr < 0 {
-        show_error("MFCreateAttributes for reader failed", hr)
+        show_error("CreateAttributes for reader failed", hr)
         return
     }
 
-    vp_guid := mf.MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING
+    vp_guid := mf.SOURCE_READER_ENABLE_VIDEO_PROCESSING
     reader_attrs->SetUINT32(&vp_guid, 1)
 
-    avp_guid := mf.MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING
+    avp_guid := mf.SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING
     reader_attrs->SetUINT32(&avp_guid, 1)
 
     reader: ^mf.IMFSourceReader
-    hr = mf.MFCreateSourceReaderFromMediaSource(source, reader_attrs, &reader)
+    hr = mf.CreateSourceReaderFromMediaSource(source, reader_attrs, &reader)
     reader_attrs->Release()
     if hr < 0 {
-        show_error("MFCreateSourceReaderFromMediaSource failed", hr)
+        show_error("CreateSourceReaderFromMediaSource failed", hr)
         return
     }
     defer reader->Release()
 
     media_type: ^mf.IMFMediaType
-    hr = mf.MFCreateMediaType(&media_type)
+    hr = mf.CreateMediaType(&media_type)
     if hr < 0 {
-        show_error("MFCreateMediaType failed", hr)
+        show_error("CreateMediaType failed", hr)
         return
     }
 
-    major_type_guid := mf.MF_MT_MAJOR_TYPE
-    video_guid      := mf.MFMediaType_Video
-    subtype_guid    := mf.MF_MT_SUBTYPE
-    rgb32_guid      := mf.MFVideoFormat_RGB32
+    major_type_guid := mf.MT_MAJOR_TYPE
+    video_guid      := mf.MediaType_Video
+    subtype_guid    := mf.MT_SUBTYPE
+    rgb32_guid      := mf.VideoFormat_RGB32
 
     media_type->SetGUID(&major_type_guid, &video_guid)
     media_type->SetGUID(&subtype_guid,    &rgb32_guid)
 
-    hr = reader->SetCurrentMediaType(mf.MF_SOURCE_READER_FIRST_VIDEO_STREAM, nil, media_type)
+    hr = reader->SetCurrentMediaType(mf.SOURCE_READER_FIRST_VIDEO_STREAM, nil, media_type)
     media_type->Release()
     if hr < 0 {
         show_error("SetCurrentMediaType failed", hr)
@@ -413,13 +413,13 @@ main :: proc() {
     }
 
     actual_type: ^mf.IMFMediaType
-    hr = reader->GetCurrentMediaType(mf.MF_SOURCE_READER_FIRST_VIDEO_STREAM, &actual_type)
+    hr = reader->GetCurrentMediaType(mf.SOURCE_READER_FIRST_VIDEO_STREAM, &actual_type)
     if hr < 0 {
         show_error("GetCurrentMediaType failed", hr)
         return
     }
 
-    frame_size_guid := mf.MF_MT_FRAME_SIZE
+    frame_size_guid := mf.MT_FRAME_SIZE
     frame_size: u64
     actual_type->GetUINT64(&frame_size_guid, &frame_size)
     actual_type->Release()
@@ -437,7 +437,7 @@ main :: proc() {
     if !init_d3d11() do return
     defer cleanup_d3d11()
 
-    hr = reader->SetStreamSelection(mf.MF_SOURCE_READER_FIRST_VIDEO_STREAM, true)
+    hr = reader->SetStreamSelection(mf.SOURCE_READER_FIRST_VIDEO_STREAM, true)
     if hr < 0 {
         show_error("SetStreamSelection failed", hr)
         return
@@ -457,7 +457,7 @@ main :: proc() {
         timestamp:    i64
 
         hr = reader->ReadSample(
-            mf.MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+            mf.SOURCE_READER_FIRST_VIDEO_STREAM,
             0,
             &stream_index,
             &flags,
@@ -469,8 +469,8 @@ main :: proc() {
             show_error("ReadSample failed", hr)
             break
         }
-        if flags & mf.MF_SOURCE_READERF_ENDOFSTREAM != 0 do break
-        if flags & mf.MF_SOURCE_READERF_ERROR        != 0 do continue
+        if flags & mf.SOURCE_READERF_ENDOFSTREAM != 0 do break
+        if flags & mf.SOURCE_READERF_ERROR        != 0 do continue
         if sample == nil do continue
 
         buffer: ^mf.IMFMediaBuffer
