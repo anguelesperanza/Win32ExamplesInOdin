@@ -33,6 +33,10 @@ As I continue to explore the media foundation api and the COM API, I'll update t
 While there is a GDI example with Media Foundation to show that it's possible, the other examples in Media Foundation will be using DX11/DX12
 as GDI is CPU/Software based and not as fast as GPU based graphics APIs
 
+Specific Note (MediaFoundationExamples/PlayVideo): 
+This will require you pass a .mp4 (only tested with, but probably any MediaFoundation compatible video) filepath/filename.
+Look for `CreateMediaSource` function call from inside the `main()` proc. That is where you will need to pass the filepath/filename
+
 ## COM Examples
 This holds examples for COM Api related things. While Media Foundation is also COM Api, those are seperate to focus soley on things related to Media Foundation. 
 The COM Examples are more general COM examples, and not focues on any specific topic / hardware. 
