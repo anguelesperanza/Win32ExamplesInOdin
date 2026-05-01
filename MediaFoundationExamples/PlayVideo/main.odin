@@ -299,7 +299,7 @@ main :: proc() {
 	/*Step 3: Create media source*/
 
 	media_source:^mf.IMFMediaSource
-	result = CreateMediaSource("C:\\Users\\King-\\Videos\\mkv-to-mp4\\Parallax Scrolling.mp4", &media_source)
+	result = CreateMediaSource("[PATH TO VIDEO HERE]", &media_source)
 	if win.FAILED(result) {
 		panic("Could not create media source. Aborted application!")
 	}
