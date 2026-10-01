@@ -7,10 +7,12 @@ import win "core:sys/windows"
 /*
 	Batter Level
 	============
+	
 	This example shows how to get the battery level related to your system.
-	Not gonna lie, doing research for this made this seem 1000% more complicated then it was.
-	Then boom, random stack overflow article (https://stackoverflow.com/questions/233446/monitor-battery-charge-with-win32-api)
-	had this as a solution. 
+
+	references:
+		https://stackoverflow.com/questions/233446/monitor-battery-charge-with-win32-api
+		https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getsystempowerstatus
 */
 
 main :: proc() {

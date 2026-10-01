@@ -1,5 +1,17 @@
 package main
 
+/*
+	Get Taskbar Position
+	====================
+
+	This gets the poistion of the task bar through a WINDOWINFO struct
+	
+	Resoruces:
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowinfo
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindoww
+*/
+
+
 import "core:fmt"
 import win "core:sys/windows"
 

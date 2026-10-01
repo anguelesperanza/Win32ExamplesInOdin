@@ -7,6 +7,9 @@ package main
 	=======================
 	This example shows how to use a hook event to listen to keyboard input even when the application is not in focus.
 	Low Level Keyboard Hooks do not need to be a seperate .dll process (according to copilot)
+
+	Resources:
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowshookexw
 */
 
 import "core:c"
@@ -45,22 +48,14 @@ main :: proc() {
 		hmod = nil,
 		dwThreadId = 0,
 	) // -> HHOOK ---
-	defer win.UnhookWindowsHookEx(hhk = windows_hook) // -> BOOL ---
 	// Second: 'Navigate' between windows (bring to top)
 	message: win.MSG
 	for running {
-		// Using PeekMessageW and not GetMessageW
-		// Peak does not wait for a message to arrive if there is not one
-		// Whereas GetMessageW does
-		if win.PeekMessageW(
-			lpMsg = &message,
-			hWnd = nil,
-			wMsgFilterMin = 0,
-			wMsgFilterMax = 0,
-			wRemoveMsg = win.PM_REMOVE,
-		) {
+		if win.PeekMessageW(lpMsg = &message,hWnd = nil,wMsgFilterMin = 0,wMsgFilterMax = 0,wRemoveMsg = win.PM_REMOVE) {
 			win.TranslateMessage(lpMsg = &message)
 			win.DispatchMessageW(lpMsg = &message)
 		}
 	}
+	
+	win.UnhookWindowsHookEx(hhk = windows_hook) // -> BOOL ---
 }

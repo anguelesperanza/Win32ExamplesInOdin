@@ -2,11 +2,14 @@ package main
 
 
 /*
-	Input - Mouse example.
+	Mouse Click
+	===========
+
 	When run, right click be pressed.
 
 	If nothing happens, try copying text before running. This will prompt the terminal (usually)
 	to ask if you want to paste your clipboard (right click action)
+		- This is a feature of powershell however, so other shells might not do it. 
 */
 
 import win "core:sys/windows"
