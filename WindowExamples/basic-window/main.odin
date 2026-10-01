@@ -1,50 +1,42 @@
 package main
 
+
+/*
+	Basic Window
+	============
+	This example shows how to create a basic window
+
+	This does three things:
+		- creates a basic window with a default black background
+		- sets that black background using paint event
+		- pressing 'escape' will close the window
+
+	Resources:
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassexw
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclassw
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-wndclassw
+		https://learn.microsoft.com/en-us/windows/win32/learnwin32/winmain--the-application-entry-point
+		https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror		
+*/
+
 import "core:fmt"
 import win "core:sys/windows"
 import "base:runtime"
-import "core:time"
-import "core:math/rand"
-
-
-/*
-	Basic window
-	Sets up window, adjusts window, and draws a black square
-*/
 
 
 // Globals
 running := true // Exiting main loop (which in turn leads to exiting application)
-
 // window size
-rect:win.RECT = {left = 0, top = 0, right = 600, bottom = 600}
+rect:win.RECT = {left = 0, top = 0, right = 1280, bottom = 720}
 
-device_context:win.HDC
-memory_device_context:win.HDC
-window:win.HWND
 
 // Callback function for handling events
-window_event_proc :: proc "stdcall" (
-	window: win.HWND,
-	message: win.UINT,
-	wParam: win.WPARAM,
-	lParam: win.LPARAM,
-) -> win.LRESULT {
+window_event_proc :: proc "stdcall" (window: win.HWND, message: win.UINT, wParam: win.WPARAM, lParam: win.LPARAM) -> win.LRESULT {
 	context = runtime.default_context()
 
 	switch message {
-		case win.WM_SIZE:
-			win.OutputDebugStringW(win.L("WM_SIZE\n"))
-		case win.WM_DESTROY:
-			running = false
-		case win.WM_ACTIVATEAPP:
-			win.OutputDebugStringW(win.L("WM_ACTIVATEAPP\n"))
-		case win.WM_CREATE:
-
 		case win.WM_PAINT:
-			// The event for painting to the window
-			// There is flickering here; double buffering could have solved it but I couldn't figure that out.
-			// Instead; I 'sleep' game_loop after every iteration and it stops the flickering (until the snake gets too big then it comes back)
+			// Very basic window painting to make the window black
 			paint: win.PAINTSTRUCT
 			hdc := win.BeginPaint(hWnd = window, lpPaint = &paint)
 			x := paint.rcPaint.left
@@ -54,17 +46,13 @@ window_event_proc :: proc "stdcall" (
 
 			win.PatBlt(hdc, x, y, width, height, win.BLACKNESS) // Drawing the background color of the window; causing flickering but without it, painting does not work right
 
-
+		case win.WM_DESTROY:
+			running = false
 		case win.WM_KEYDOWN:
 			// The event for handling key presses (like escape, shift, etc)
 			switch wParam {
 				case win.VK_ESCAPE:
 					running = false
-			}
-
-		case win.WM_CHAR:
-			// The event for keyboard presses (like, w,a,s,d etc)
-			switch(wParam) {
 			}
 		}
 		
@@ -73,24 +61,31 @@ window_event_proc :: proc "stdcall" (
 
 main :: proc() {
 
-	// Window Creation Start
+
+	// Create a handle to the instance of the application - The thing the OS uses to ID the executable
 	instance := win.HINSTANCE(win.GetModuleHandleW(nil)) // Create Instance
-	// create window class
-	window_class := win.WNDCLASSW {
+
+	// Create the attributes that the window will use when it's registered
+	window_class: win.WNDCLASSEXW = {
+		cbSize = size_of(win.WNDCLASSEXW),
 		style = win.CS_OWNDC | win.CS_HREDRAW | win.CS_VREDRAW,
-		lpfnWndProc = window_event_proc, // [] created callback function
+		lpfnWndProc = window_event_proc,
+		cbClsExtra = 0,
+		cbWndExtra = 0,
 		hInstance = instance,
-		lpszClassName = win.L("BasicWindowClass"),		
+		hIcon = nil,
+		hCursor = nil,
+		hbrBackground = nil,
+		lpszMenuName = nil,
+		lpszClassName = win.L("Basic_Window_Class"),
+		hIconSm = nil,
 	}
 
-	win.RegisterClassW(lpWndClass = &window_class) // Register the class
+	
+	win.RegisterClassExW(&window_class)
 	win.AdjustWindowRect(lpRect = &rect, dwStyle = win.WS_OVERLAPPEDWINDOW, bMenu = win.FALSE) // Adjust window
 
-	// Create window
-	//
-	//
-
-	window = win.CreateWindowExW(
+	window := win.CreateWindowExW(
 		dwExStyle = 0,
 		lpClassName = window_class.lpszClassName,
 		lpWindowName = win.L("Basic Window"),
@@ -104,6 +99,13 @@ main :: proc() {
 		hInstance = instance,
 		lpParam = nil,
 	)
+	
+	if window == nil {
+		error := win.GetLastError()
+		fmt.println(error)
+	}
+
+	win.ShowWindow(window,win.SW_SHOW)
 
 	// message/event loop
 	message:win.MSG

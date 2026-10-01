@@ -2,8 +2,16 @@ package main
 
 
 /*
-	Input - Keyboard example.
+	Send Keyboard Input
+	===================
+
 	When run, a w should appear in the terminal
+
+	When running with odin run . , a w should appear in the terminal around when the program exits
+
+	resources:
+		https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
+
 */
 
 import win "core:sys/windows"

@@ -2,10 +2,15 @@ package main
 
 
 /*
-	Input - Mouse Move Example.
 
+	Mouse Move
+	==========
 	This will move the mouse. If unsure if working,
 	plece mouse in corner of screen first
+
+	Depending on the editor your using, the mouse might not move (helix)
+
+	Best to run odin build . and launch the executable from file explorer
 	
 */
 
@@ -16,7 +21,7 @@ main :: proc() {
 	inputs: [1]win.INPUT
 	inputs[0].type = .MOUSE
 
-	inputs[0].mi.dx = 400
+	inputs[0].mi.dx = 200
 	inputs[0].mi.dy = 400
 
 	inputs[0].mi.dwFlags = win.MOUSEEVENTF_MOVE

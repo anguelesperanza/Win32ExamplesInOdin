@@ -1,17 +1,28 @@
-
 package main
+
+/*
+	Get Today Date
+	==============
+
+
+	Today's date is local time, but without the time portion of the date
+	To get todays' date, we just call GetLocalTime
+	
+	According to the docs:
+		GetLocalTime takes a pointer to SYSTEMTIME (types.odin) <-- This Exists in the odin bindings but not LPSYSTEMTIME.
+		
+	For the sake of having matching arguments here and in offical docs, created LPSYSTEMTIME, but really, just gonna pass pointer to SYSTEMTIME
+
+	Resources
+		https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime
+*/
+
 
 import "core:fmt"
 import win "core:sys/windows"
 
 foreign import kernel32 "system:Kernel32.lib"
 
-// According to Win32 Docs (https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime)
-// GetLocalTime takes a pointer to SYSTEMTIME (types.odin) <-- This Exists in the odin bindings but not LPSYSTEMTIME.
-// For the sake of having matching arguments here and in offical docs, created LPSYSTEMTIME, but really, just gonna pass pointer to SYSTEMTIME
-//
-// You may have noticed this looks exactly like GetLocalTime....that's cause it is.
-// GetLocalTime has todays date in it, in addition to the current time
 LPSYSTEMTIME :: ^win.SYSTEMTIME
 
 @(default_calling_convention="system")

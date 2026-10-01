@@ -2,15 +2,14 @@ package main
 
 
 /*
-
-Update: 9/10/2025 -- Updated to use the new cstring16 datatype in odin
-
-This file gets the executable names of open windows
-It does this by using the QueryFullProcessImageNameW procedure.
+	Get Prcoess Names
+	=================
 
 
-This does not exist in the odin binings for win32 at the moment (or at least I could not find them)
-so I created the binding myself -- lines 21 - 26
+	This file gets the executable names of open windows
+	It does this by using the QueryFullProcessImageNameW procedure.
+
+	QueryFullProcessImageNameW does not exist in the Odin bindings and needs to be created
 
 */
 
@@ -89,8 +88,6 @@ Window_Enum_Proc :: proc "stdcall" (window_handle: win.HWND,window_enum_param: w
 }
 
 main :: proc() {
-	fmt.println("Hello World!")
-
 	l_param:win.LPARAM
 	win.EnumWindows(lpEnumFunc = Window_Enum_Proc, lParam = l_param)// -> BOOL ---
 }
