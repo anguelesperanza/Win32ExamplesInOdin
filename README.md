@@ -46,11 +46,20 @@ This will require you pass a .mp4 (only tested with, but probably any MediaFound
 Look for `CreateMediaSource` function call from inside the `main()` proc. That is where you will need to pass the filepath/filename
 
 ## COM Examples
+
 This holds examples for COM Api related things. While Media Foundation is also COM Api, those are seperate to focus soley on things related to Media Foundation. 
 The COM Examples are more general COM examples, and not focues on any specific topic / hardware. 
 
 If enough COM examples that are centered around a specific action (like IO) are gathered, they'll be split off into their own folders. 
 
+
+## COM Lite / Nano COM Examples
+COM Lite or Nano COM is COM style api that looks similar to a COM API but isn't, which means the COM runtime isn't used.
+
+So far in this repository only `GameInput` fits this. The official docs called this a COM Lite / Nano COM API as well (https://learn.microsoft.com/en-us/gaming/gdk/docs/features/common/input/overviews/input-fundamentals?view=gdk-2604)
+  - Note section at the bottom 
+
+As I try out more microsoft related APIs, I'll add more COM Lite / Nano COM examples should I come across them, as I do with the other examples in this folder (COM, GDI, Win32)
 
 ## Resources used while working on this repository
 
